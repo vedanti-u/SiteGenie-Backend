@@ -41,9 +41,14 @@ If you need to update `npm`, you can make it using `npm`! Cool right? After runn
     $ git clone https://github.com/vedanti-u/site-backend.git
     $ yarn install
 
+## Nodemon Installation
+    $ yarn global add nodemon
+
 ## Running the project
 
     $ yarn start
+    OR
+    $ nodemon app.js
 
 ## Simple build for production
 
