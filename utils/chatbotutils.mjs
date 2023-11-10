@@ -7,16 +7,18 @@ import { HNSWLib } from 'langchain/vectorstores/hnswlib';
 import { RetrievalQAChain } from 'langchain/chains';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { OpenAI } from 'langchain/llms/openai';
-
 dotenv.config();
-async function createChatBot(url){
+const url = "https://daywiseai.com"
+const VECTOR_STORE_PATH = `vector/${removeProtocol(url)}.index`;
+const model = new OpenAI({});
+
+async function createChatBot(url1){
     //let vectorStore;
-    const model = new OpenAI({});
-    const VECTOR_STORE_PATH = `vector/${removeProtocol(url)}.index`;
+    
     const fileExists = await checkFileExists(VECTOR_STORE_PATH);
     if(fileExists){
         console.log('Vector Exists');
-        const vectorStore = await HNSWLib.load(VECTOR_STORE_PATH,new OpenAIEmbeddings());
+        const vectorStore = await HNSWLib.load(VECTOR_STORE_PATH,new OpenAIEmbeddings({ maxConcurrency: 5 }));
         const res = processPrompt(model,vectorStore);
         console.log("this is response in if=>",res);
     }
@@ -29,7 +31,7 @@ async function createChatBot(url){
             excludeDirs:["https://js.langchain.com/docs/api/"],
         });
         const docs = await loader.load();
-        const vectorStore = await HNSWLib.fromDocuments(docs,new OpenAIEmbeddings());
+        const vectorStore = await HNSWLib.fromDocuments(docs,new OpenAIEmbeddings({ maxConcurrency: 5 }));
         await vectorStore.save(VECTOR_STORE_PATH);
         const res = processPrompt(model,vectorStore);
         console.log("this is response in else =>",res);
@@ -66,4 +68,18 @@ function removeProtocol(url) {
     return url.replace(/^https?:\/\//, '');
 }
 
-export default createChatBot;
+async function chatBotPrompt(url,prompt){
+    try{
+        const vectorStore = await HNSWLib.load(VECTOR_STORE_PATH,new OpenAIEmbeddings());
+        const chain = RetrievalQAChain.fromLLM(model,vectorStore.asRetriever());
+        const response = await chain.call({
+            query:prompt,
+        })
+        console.log(response);
+    }catch{
+        console.log("Unexpected error occur");
+        //return error;
+    }
+}
+chatBotPrompt("https://daywiseai.com","how can daywiseai can help me?");
+//export default createChatBot;
