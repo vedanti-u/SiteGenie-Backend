@@ -14,7 +14,6 @@ const model = new OpenAI({});
 
 async function createChatBot(url1){
     //let vectorStore;
-    
     const fileExists = await checkFileExists(VECTOR_STORE_PATH);
     if(fileExists){
         console.log('Vector Exists');
@@ -62,13 +61,13 @@ async function processPrompt(model,vectorStore){
         return error;
     }
 }
-createChatBot("https://daywiseai.com");
+
 function removeProtocol(url) {
     // Remove "http://" or "https://", if present
     return url.replace(/^https?:\/\//, '');
 }
 
-async function chatBotPrompt(url,prompt){
+async function chatBotPrompt(prompt){
     try{
         const vectorStore = await HNSWLib.load(VECTOR_STORE_PATH,new OpenAIEmbeddings());
         const chain = RetrievalQAChain.fromLLM(model,vectorStore.asRetriever());
@@ -81,5 +80,23 @@ async function chatBotPrompt(url,prompt){
         //return error;
     }
 }
-chatBotPrompt("https://daywiseai.com","how can daywiseai can help me?");
+
+function removeEmbeddings(path){
+    fs.rm(path, { recursive: true }, (err) => {
+        if (err) {
+          console.error(err);
+        }
+        console.log('File deleted successfully');
+      });
+}
+
+async function updateEmbeddings(url,path){
+    removeEmbeddings(path);
+    createChatBot(url);
+    console.log("Updated embeddings");
+}
+//createChatBot("https://daywiseai.com");
+//chatBotPrompt("https://daywiseai.com","how can daywiseai can help me?");
+//removeEmbeddings(VECTOR_STORE_PATH);
+updateEmbeddings(url,VECTOR_STORE_PATH);
 //export default createChatBot;
