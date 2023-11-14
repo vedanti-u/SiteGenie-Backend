@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "contains backend code",
   "main": "index.js",
-  "type": "module",
   "repository": "https://github.com/vedanti-u/site-backend.git",
   "author": "vedanti-u",
   "license": "MIT",
