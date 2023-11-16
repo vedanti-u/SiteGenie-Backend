@@ -48,6 +48,7 @@ async function createChatBot(url,prompt){
           console.log("this is vectorStore",vectorStore)
         const res = processPrompt(model,vectorStore,prompt);
         console.log("this is response in if=>",res);
+        return res;
     }
     else{
         console.log("Creating Vector Store..");
@@ -77,8 +78,55 @@ async function createChatBot(url,prompt){
          console.log("This are ids: ",ids);
         const res = processPrompt(model,vectorStore,prompt);
         console.log("this is response in else =>",res);
+          return res;
     }
-    //return res;
+}
+
+async function generateChatBot(url){
+    console.log('In generateChatBot func');
+    const url_to_check = `${removeProtocol(url)}`;
+    const fileExists = await checkFileExists(url_to_check);
+    if(fileExists){
+        console.log('Vector Store Exists..');
+        const vectorStore = await SupabaseVectorStore.fromExistingIndex(new OpenAIEmbeddings({ maxConcurrency: 5 }),{
+            client,
+            tableName: "documents",
+          });
+        console.log("this is vectorStore",vectorStore)
+        //const res = processPrompt(model,vectorStore,prompt);
+        //console.log("this is response in if=>",res)
+        return "Already created";
+
+    }
+    else{
+        console.log("Creating Vector Store..");
+        const compiledConvert = compile({wordwrap:130});
+        const loader = new RecursiveUrlLoader(url,{
+            extractor: compiledConvert,
+            maxDepth:1,
+            excludeDirs:["https://js.langchain.com/docs/api/"],
+        });
+        const vecdocs = await loader.load();
+        const vecdocsArray = [vecdocs[0].pageContent]
+        console.log("vecdocs..",vecdocs)
+        const textSplitter = new RecursiveCharacterTextSplitter({
+            chunkSize: 1000,
+          });
+          const docs = await textSplitter.createDocuments(vecdocsArray);
+          const vectorStore = new SupabaseVectorStore(new OpenAIEmbeddings({ maxConcurrency: 5 }), {
+            client,
+            tableName: "documents",
+          });
+          const website_url = `${removeProtocol(url)}`;
+          console.log("vectorstore...",vectorStore);
+          console.log("this is docs...",docs);
+          docs[0].metadata={"url":website_url};
+         const ids =  await vectorStore.addDocuments(docs);
+         console.log("This are ids: ",ids);
+        //const res = processPrompt(model,vectorStore,prompt);
+        //console.log("this is response in else =>",res);
+        return "Succesfully created";
+    }
 }
 // router.get('/', async (req, res) => {
 //     try {
@@ -105,7 +153,7 @@ async function checkFileExists(urlToCheck){
         var {data,error}=await client.from('documents').select('metadata');
         console.log(data);
 
-        data = data.filter(e=>e.metadata.url=='daywiseai.com');
+        data = data.filter(e=>e.metadata.url==urlToCheck);
         console.log("SSS",data);
 
         if(error){
@@ -158,13 +206,39 @@ async function chatBotPrompt(prompt){
     }
 }
 
-function removeEmbeddings(path){
-    fs.rm(path, { recursive: true }, (err) => {
-        if (err) {
-          console.error(err);
+async function removeEmbeddings(urlToCheck){
+    try{
+        console.log("in try... checking if file exist")
+        console.log("supabase query..",urlToCheck)
+        var {data,error}=await client.from('documents').select('metadata');
+        console.log(data);
+
+        data = data.filter(e=>e.metadata.url==urlToCheck);
+        console.log("SSS",data);
+
+        if(error){
+            console.error("supabase error to find..",error);
+            return false;
         }
-        console.log('File deleted successfully');
-      });
+        const urlExists = data && data.length>0;
+        //await fs.access(filePath);
+      console.log("this is urlExists",urlExists);
+       
+        const vectorStore = await SupabaseVectorStore.fromExistingIndex(new OpenAIEmbeddings({ maxConcurrency: 5 }),{
+            client,
+            tableName: "documents",
+          });
+        console.log("this is vectorStore that is to be deleted",vectorStore)
+        vectorStore.delete(urlExists);
+        if (err) {
+            console.error(err);
+          }
+          console.log('File deleted successfully');
+    }catch(error){
+        console.log("in catch... no vector to delete "+error)
+        return false;
+    }
+      
 }
 
 async function updateEmbeddings(url,path){
@@ -172,11 +246,11 @@ async function updateEmbeddings(url,path){
     createChatBot(url);
     console.log("Updated embeddings");
 }
-createChatBot("https://daywiseai.com","How does daywiseai help us?");
+//createChatBot("https://daywiseai.com","How does daywiseai help us?");
 //chatBotPrompt("https://daywiseai.com","how can daywiseai can help me?");
-//removeEmbeddings(VECTOR_STORE_PATH);
+removeEmbeddings("daywiseai.com");
 //updateEmbeddings(url,VECTOR_STORE_PATH);
-module.exports=createChatBot
+module.exports={generateChatBot,createChatBot}
 
 
 async function generateEmbeddings(text, project_id) {
