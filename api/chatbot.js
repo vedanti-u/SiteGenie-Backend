@@ -2,7 +2,7 @@ var express = require('express')
 var router = express.Router();
 var bodyParser = require('body-parser');
 const chatBotUtils = require('../utils/chatbotutils.js');
-const generateChatBot = require('../utils/chatbotutils.js')
+//const generateChatBot = require('../utils/chatbotutils.js')
 
 // var jsonParser = bodyParser.json();
 // var urlencodedParser = bodyParser.urlencoded({extended:true})
@@ -47,5 +47,39 @@ router.post('/chatbotprompt',async(req,res)=>{
         return res.status(500).send({error});
     }
 });
-
+router.delete('/chatbot',async(req,res)=>{
+    console.log("In Delete")
+    console.log(req.body);
+    const fetchedUrl = req.body.url;
+    console.log(fetchedUrl)
+    if(!fetchedUrl){
+        res.json("Url required");
+    }
+    try{
+        console.log("trying to delete")
+        const answer = await chatBotUtils.removeEmbeddings(fetchedUrl);
+        res.send(answer);
+    }catch(error){
+        console.log("Catch block error:",error);
+        return res.status(500).send({error});
+    }
+});
+router.put('/chatbot',async(req,res)=>{
+    console.log("In IN PUT")
+    console.log(req.body);
+    const fetchedUrl = req.body.url;
+    console.log(fetchedUrl)
+    if(!fetchedUrl){
+        res.json("Url required");
+    }
+    try{
+        console.log("trying to send response")
+        const answer = await chatBotUtils.updateEmbeddings(fetchedUrl);
+        //res.json(answer);
+        res.send(answer);
+    }catch(error){
+        console.log("Catch block error:",error);
+        return res.status(500).send({error});
+    }
+});
 module.exports=router;
