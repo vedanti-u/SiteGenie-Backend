@@ -48,6 +48,7 @@ async function createChatBot(url,prompt){
           console.log("this is vectorStore",vectorStore)
         const res = processPrompt(model,vectorStore,prompt);
         console.log("this is response in if=>",res);
+        return res;
     }
     else{
         console.log("Creating Vector Store..");
@@ -77,8 +78,58 @@ async function createChatBot(url,prompt){
          console.log("This are ids: ",ids);
         const res = processPrompt(model,vectorStore,prompt);
         console.log("this is response in else =>",res);
+          return res;
     }
-    //return res;
+}
+
+async function generateChatBot(url){
+    console.log('In generateChatBot func');
+    const url_to_check = `${removeProtocol(url)}`;
+    const fileExists = await checkFileExists(url_to_check);
+    if(fileExists){
+        console.log('Vector Store Exists..');
+        const vectorStore = await SupabaseVectorStore.fromExistingIndex(new OpenAIEmbeddings({ maxConcurrency: 5 }),{
+            client,
+            tableName: "documents",
+          });
+        console.log("this is vectorStore",vectorStore)
+        //const res = processPrompt(model,vectorStore,prompt);
+        //console.log("this is response in if=>",res)
+        return "Already created";
+
+    }
+    else{
+        console.log("Creating Vector Store..");
+        const compiledConvert = compile({wordwrap:130});
+        const loader = new RecursiveUrlLoader(url,{
+            extractor: compiledConvert,
+            maxDepth:1,
+            excludeDirs:["https://js.langchain.com/docs/api/"],
+        });
+        const vecdocs = await loader.load();
+        const vecdocsArray = [vecdocs[0].pageContent]
+        console.log("vecdocs..",vecdocs)
+        const textSplitter = new RecursiveCharacterTextSplitter({
+            chunkSize: 1000,
+          });
+          const docs = await textSplitter.createDocuments(vecdocsArray);
+          const vectorStore = new SupabaseVectorStore(new OpenAIEmbeddings({ maxConcurrency: 5 }), {
+            client,
+            tableName: "documents",
+          });
+          const website_url = `${removeProtocol(url)}`;
+          console.log("vectorstore...",vectorStore);
+          console.log("this is docs...",docs);
+          docs.forEach((entry, index) => {
+            docs[index].metadata ={"url":website_url}          
+            });
+          docs[0].metadata={"url":website_url};
+         const ids =  await vectorStore.addDocuments(docs);
+         console.log("This are ids: ",ids);
+        //const res = processPrompt(model,vectorStore,prompt);
+        //console.log("this is response in else =>",res);
+        return "Succesfully created";
+    }
 }
 // router.get('/', async (req, res) => {
 //     try {
@@ -105,7 +156,7 @@ async function checkFileExists(urlToCheck){
         var {data,error}=await client.from('documents').select('metadata');
         console.log(data);
 
-        data = data.filter(e=>e.metadata.url=='daywiseai.com');
+        data = data.filter(e=>e.metadata.url==urlToCheck);
         console.log("SSS",data);
 
         if(error){
@@ -144,39 +195,80 @@ function removeProtocol(url) {
     return url.replace(/^https?:\/\//, '');
 }
 
-async function chatBotPrompt(prompt){
+// async function chatBotPrompt(prompt){
+//     try{
+//         const vectorStore = await HNSWLib.load(VECTOR_STORE_PATH,new OpenAIEmbeddings());
+//         const chain = RetrievalQAChain.fromLLM(model,vectorStore.asRetriever());
+//         const response = await chain.call({
+//             query:prompt,
+//         })
+//         console.log(response);
+//     }catch{
+//         console.log("Unexpected error occur");
+//         //return error;
+//     }
+// }
+
+async function removeEmbeddings(urlToCheck){
     try{
-        const vectorStore = await HNSWLib.load(VECTOR_STORE_PATH,new OpenAIEmbeddings());
-        const chain = RetrievalQAChain.fromLLM(model,vectorStore.asRetriever());
-        const response = await chain.call({
-            query:prompt,
-        })
-        console.log(response);
-    }catch{
-        console.log("Unexpected error occur");
-        //return error;
-    }
-}
+        console.log("in try... checking if vector exist to delete")
+        console.log("supabase query to find..",urlToCheck)
+        var {data,error}=await client.from('documents').select(`id,metadata->url`);
+        console.log("total data",data);
 
-function removeEmbeddings(path){
-    fs.rm(path, { recursive: true }, (err) => {
-        if (err) {
-          console.error(err);
+        data = data.filter(e=>e.url==urlToCheck);
+        console.log("SSS",data);
+        var indices = [];
+        data.forEach(e=>{indices.push(e.id)})
+        console.log("Indices of entries..",indices)
+        console.log("this is final data..",data)
+        
+
+        if(error){
+            console.error("supabase error to find..",error);
+            return false;
         }
-        console.log('File deleted successfully');
+        const urlExists = indices.length>0;
+        const noOfEmbeddings = indices.length;
+
+        //await fs.access(filePath);
+        if(!urlExists)return "No embeddings found";
+      console.log("this is urlExists",urlExists);
+       
+      const vectorStore = await SupabaseVectorStore.fromExistingIndex(new OpenAIEmbeddings({ maxConcurrency: 5 }),{
+        client,
+        tableName: "documents",
       });
+        // Convert indices to strings or numbers, depending on your use case
+        //const stringIndices = indices.map(index => String(index));
+        const numberIndices = indices.map(index => Number(index));
+
+        await vectorStore.delete({ ids: numberIndices });
+        // or await vectorStore.delete({ ids: numberIndices });
+      //await vectorStore.delete({indices})
+      console.log("deleted successfully",noOfEmbeddings);
+      return ("Deleted Embeddings sucessfully");
+        
+    }catch(error){
+        console.log("in catch... no vector to delete "+error)
+        return "Unable to delete embeddings";
+    }
+      
 }
 
-async function updateEmbeddings(url,path){
-    removeEmbeddings(path);
-    createChatBot(url);
+async function updateEmbeddings(url){
+  console.log("calling remove embeddings")  
+  removeEmbeddings(url);
+  console.log("calling generate chatbot")
+    generateChatBot(url);
     console.log("Updated embeddings");
+    return "Updated embeddings"
 }
-createChatBot("https://daywiseai.com","How does daywiseai help us?");
+//createChatBot("https://daywiseai.com","How does daywiseai help us?");
 //chatBotPrompt("https://daywiseai.com","how can daywiseai can help me?");
-//removeEmbeddings(VECTOR_STORE_PATH);
+//removeEmbeddings("skippi.in/");
 //updateEmbeddings(url,VECTOR_STORE_PATH);
-module.exports=createChatBot
+module.exports={generateChatBot,createChatBot,removeEmbeddings,updateEmbeddings}
 
 
 async function generateEmbeddings(text, project_id) {
@@ -200,3 +292,41 @@ async function generateEmbeddings(text, project_id) {
       }
     );
   }
+  
+const run = async () => {
+    
+    const embeddings = new OpenAIEmbeddings();
+  
+    const store = new SupabaseVectorStore(embeddings, {
+      client,
+      tableName: "documents",
+    });
+  
+    const docs = [
+      { pageContent: "hello", metadata: { b: 1, c: 9, stuff: "right" } },
+      { pageContent: "hello", metadata: { b: 1, c: 9, stuff: "wrong" } },
+    ];
+  
+    // Also takes an additional {ids: []} parameter for upsertion
+    const ids = await store.addDocuments(docs);
+  
+    const resultA = await store.similaritySearch("hello", 2);
+    console.log(resultA);
+  
+    /*
+      [
+        Document { pageContent: "hello", metadata: { b: 1, c: 9, stuff: "right" } },
+        Document { pageContent: "hello", metadata: { b: 1, c: 9, stuff: "wrong" } },
+      ]
+    */
+  
+    await store.delete({ ids });
+  
+    const resultB = await store.similaritySearch("hello", 2);
+    console.log(resultB);
+  
+    /*
+      []
+    */
+  };
+  //run();
