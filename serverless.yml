@@ -1,0 +1,14 @@
+service: sitegenie
+provider:
+  name: aws
+  runtime: nodejs18.x
+  architecture: arm64
+  region: "ap-south-1"
+  timeout: 120
+
+functions:
+  api:
+    handler: index.handler
+    events:
+      - http: ANY /
+      - http: "ANY {proxy+}"
