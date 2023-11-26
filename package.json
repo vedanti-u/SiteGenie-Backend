@@ -9,6 +9,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",
     "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "html-to-text": "^9.0.5",
@@ -17,6 +18,17 @@
     "serverless-http": "^3.2.0"
   },
   "scripts": {
-    "start": "node app.js"
+    "start": "node index.js",
+    "test-local":"npx mocha .\\test\\chatbotApiIntTest.js",
+    "test-stg":"npx mocha .\\test\\chatbotApiIntTest.js https://us8c1blf22.execute-api.ap-south-1.amazonaws.com/stg/",
+    "test-prod":"npx mocha .\\test\\chatbotApiIntTest.js https://us8c1blf22.execute-api.ap-south-1.amazonaws.com/prod/",
+    "deploy-stg":"powershell.exe cd .\\deploy ; .\\deploy-to-lambda.ps1 stg",
+    "deploy-prod":"powershell.exe cd .\\deploy ; .\\deploy-to-lambda.ps1 prod"
+
+  },
+  "devDependencies": {
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "supertest": "^6.3.3"
   }
 }

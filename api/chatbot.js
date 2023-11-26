@@ -1,6 +1,8 @@
 var express = require('express')
 var router = express.Router();
 var bodyParser = require('body-parser');
+var cors = require('cors')
+
 const chatBotUtils = require('../utils/chatbotutils.js');
 //const generateChatBot = require('../utils/chatbotutils.js')
 
@@ -11,10 +13,10 @@ router.get('/chatbot', (req, res) => {
     res.send('Hello World! im chatbot')
   })
 router.post('/chatbot',async(req,res)=>{
-    console.log("In POST")
-    console.log(req.body);
+    // console.log("In POST")
+    // console.log(req.body);
     const fetchedUrl = req.body.url;
-    console.log(fetchedUrl)
+    // console.log(fetchedUrl)
     if(!fetchedUrl){
         res.json("Url required");
     }
@@ -49,9 +51,9 @@ router.post('/chatbotprompt',async(req,res)=>{
 });
 router.delete('/chatbot',async(req,res)=>{
     console.log("In Delete")
-    console.log(req.body);
+    // console.log(req.body);
     const fetchedUrl = req.body.url;
-    console.log(fetchedUrl)
+  //  console.log(fetchedUrl)
     if(!fetchedUrl){
         res.json("Url required");
     }
@@ -66,9 +68,9 @@ router.delete('/chatbot',async(req,res)=>{
 });
 router.put('/chatbot',async(req,res)=>{
     console.log("In IN PUT")
-    console.log(req.body);
+    // console.log(req.body);
     const fetchedUrl = req.body.url;
-    console.log(fetchedUrl)
+   // console.log(fetchedUrl)
     if(!fetchedUrl){
         res.json("Url required");
     }
