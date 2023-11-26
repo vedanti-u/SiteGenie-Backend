@@ -78,7 +78,7 @@ router.put('/chatbot',async(req,res)=>{
         console.log("trying to send response")
         const answer = await chatBotUtils.updateEmbeddings(fetchedUrl);
         //res.json(answer);
-        res.send(answer);
+        res.status(200).send(answer);
     }catch(error){
         console.log("Catch block error:",error);
         return res.status(500).send({error});

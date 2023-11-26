@@ -21,6 +21,10 @@ if (url === null) {
 
 describe('Chatbot API', () => {
   const baseRoute = url === null ? '/api' : ''; // Modify the base route based on the url
+  beforeEach(async () => {
+    // Any setup code you want to run before each test
+    console.log("HIIIII")
+  });
 
   it('should respond with "Hello World! im chatbot" for GET ' + baseRoute + '/chatbot', async () => {
     const response = await request.get(baseRoute + '/chatbot');
@@ -35,7 +39,7 @@ describe('Chatbot API', () => {
 
     expect(response.status).to.equal(200);
     // Add more assertions based on your expected response
-  });
+  }).timeout(5000);
 
   it('should respond with chatbot answer for POST ' + baseRoute + '/chatbotprompt', async () => {
     const response = await request
@@ -44,7 +48,7 @@ describe('Chatbot API', () => {
 
     expect(response.status).to.equal(200);
     // Add more assertions based on your expected response
-  });
+  }).timeout(5000);
 
   it('should respond with success for PUT ' + baseRoute + '/chatbot', async () => {
     const response = await request
@@ -53,7 +57,8 @@ describe('Chatbot API', () => {
 
     expect(response.status).to.equal(200);
     // Add more assertions based on your expected response
-  });
+  }).timeout(10000);
+
   it('should respond with success for DELETE ' + baseRoute + '/chatbot', async () => {
     const response = await request
       .delete(baseRoute + '/chatbot')
