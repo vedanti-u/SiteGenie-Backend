@@ -24,6 +24,6 @@ jobs:
       - name: Run tests
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          PUBLIC_SUPABASE_PRIVATE_KEY: ${{ secrets.PUBLIC_SUPABASE_PRIVATE_KEY }}
-          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          SUPABASE_PRIVATE_KEY: ${{ secrets.PUBLIC_SUPABASE_PRIVATE_KEY }}
+          SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
         run: npm run test-local
