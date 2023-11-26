@@ -20,10 +20,10 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        
+
       - name: Run tests
-          env:
-            OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-            PUBLIC_SUPABASE_PRIVATE_KEY: ${{ secrets.PUBLIC_SUPABASE_PRIVATE_KEY }}
-            PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
-          run: npm run test-local
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PUBLIC_SUPABASE_PRIVATE_KEY: ${{ secrets.PUBLIC_SUPABASE_PRIVATE_KEY }}
+          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+        run: npm run test-local
