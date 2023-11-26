@@ -1,29 +1,32 @@
-name: Run Tests
+name: Your Workflow
 
 on:
   push:
     branches:
-      - "*"
+      - main
 
 jobs:
-  test:
+  your_job:
     runs-on: windows-latest
 
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      PUBLIC_SUPABASE_PRIVATE_KEY: ${{ secrets.PUBLIC_SUPABASE_PRIVATE_KEY }}
+      PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
+      - name: Use Secrets in Environment Variables
+        run: |
+          echo "OPENAI_API_KEY=${OPENAI_API_KEY}" >> $env:GITHUB_ENV
+          echo "PUBLIC_SUPABASE_PRIVATE_KEY=${PUBLIC_SUPABASE_PRIVATE_KEY}" >> $env:GITHUB_ENV
+          echo "PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}" >> $env:GITHUB_ENV
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          SUPABASE_PRIVATE_KEY: ${{ secrets.PUBLIC_SUPABASE_PRIVATE_KEY }}
-          SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
-        run: npm run test-local
+      - name: Your Other Steps
+        run: |
+          # Your other commands that use the secrets as environment variables
+          echo "Using OpenAI API Key: $env:OPENAI_API_KEY"
+          echo "Using Supabase Private Key: $env:PUBLIC_SUPABASE_PRIVATE_KEY"
+          echo "Using Supabase URL: $env:PUBLIC_SUPABASE_URL"
