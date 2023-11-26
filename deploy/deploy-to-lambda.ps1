@@ -1,9 +1,9 @@
 param (
-    [string]$stage
+    [string]$stage = $args[0]
 )
 
 # Set the temporary directory
-$tempDirectory = "LambdaDeploy"
+$tempDirectory = ".\deploy\LambdaDeploy"
 Remove-Item -Path $tempDirectory -Recurse -Force
 
 # Create the temporary directory if it doesn't exist
@@ -20,13 +20,22 @@ cd $tempDirectory
 
 # Install dependencies or perform any necessary setup
 # For example, if your project has Node.js dependencies
-
-
 npm install
 cd ..
 cd ..
-# Deploy using Serverless Framework
-npx sls deploy --stage stg
 
-# Clean up: Optionally, remove the temporary directory if needed
-#Remove-Item -Path $tempDirectory -Recurse -Force
+# Run local tests
+npm run test-local
+
+# Check if tests passed
+if ($LASTEXITCODE -eq 0) {
+    # Deploy using Serverless Framework
+    npx sls deploy --stage $stage
+
+    # Run tests for the specified stage
+    npm run test-$stage
+}
+else {
+    Write-Host "Tests failed. Deployment aborted."
+}
+Remove-Item -Path $tempDirectory -Recurse -Force
