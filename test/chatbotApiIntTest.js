@@ -35,7 +35,7 @@ describe('Chatbot API', () => {
   it('should respond with chatbot answer for POST ' + baseRoute + '/chatbot', async () => {
     const response = await request
       .post(baseRoute + '/chatbot')
-      .send({ url: 'https://skippi.in/' });
+      .send({ url: 'https://www.daywiseai.com/' });
 
     expect(response.status).to.equal(200);
     // Add more assertions based on your expected response
@@ -44,7 +44,7 @@ describe('Chatbot API', () => {
   it('should respond with chatbot answer for POST ' + baseRoute + '/chatbotprompt', async () => {
     const response = await request
       .post(baseRoute + '/chatbotprompt')
-      .send({ url: 'https://skippi.in/', prompt: 'your-prompt-here' });
+      .send({ url: 'https://www.daywiseai.com/', prompt: 'your-prompt-here' });
 
     expect(response.status).to.equal(200);
     // Add more assertions based on your expected response
@@ -62,7 +62,7 @@ describe('Chatbot API', () => {
   it('should respond with success for DELETE ' + baseRoute + '/chatbot', async () => {
     const response = await request
       .delete(baseRoute + '/chatbot')
-      .send({ url: 'https://skippi.in/' });
+      .send({ url: 'https://www.daywiseai.com/' });
 
     expect(response.status).to.equal(200);
     // Add more assertions based on your expected response
