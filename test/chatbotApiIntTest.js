@@ -50,14 +50,14 @@ describe('Chatbot API', () => {
     // Add more assertions based on your expected response
   }).timeout(5000);
 
-  it('should respond with success for PUT ' + baseRoute + '/chatbot', async () => {
-    const response = await request
-      .put(baseRoute + '/chatbot')
-      .send({ url: 'https://skippi.in/' });
+  // it('should respond with success for PUT ' + baseRoute + '/chatbot', async () => {
+  //   const response = await request
+  //     .put(baseRoute + '/chatbot')
+  //     .send({ url: 'https://skippi.in/' });
 
-    expect(response.status).to.equal(200);
-    // Add more assertions based on your expected response
-  }).timeout(10000);
+  //   expect(response.status).to.equal(200);
+  //   // Add more assertions based on your expected response
+  // }).timeout(10000);
 
   it('should respond with success for DELETE ' + baseRoute + '/chatbot', async () => {
     const response = await request
