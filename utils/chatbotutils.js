@@ -84,6 +84,7 @@ async function createChatBot(url,prompt){
     }
 }
 
+
 async function generateChatBot(url){
    // console.log('In generateChatBot func');
     const url_to_check = `${removeProtocol(url)}`;
@@ -151,29 +152,6 @@ async function generateChatBot(url){
 //   });
   
 
-async function checkFileExists(urlToCheck){
-    try{
-       // console.log("in try... checking if file exist")
-        //console.log("supabase query..",urlToCheck)
-        var {data,error}=await client.from('documents').select('metadata');
-       // console.log(data);
-
-        data = data.filter(e=>e.metadata.url==urlToCheck);
-       // console.log("SSS",data);
-
-        if(error){
-            console.error("supabase error to find..",error);
-            return false;
-        }
-        const urlExists = data && data.length>0;
-        //await fs.access(filePath);
-      //console.log("this is urlExists",urlExists);
-        return urlExists;
-    }catch(error){
-        console.log("in catch... no file found "+error)
-        return false;
-    }
-}
 
 async function processPrompt(model,vectorStore,prompt){
     try{
@@ -191,12 +169,6 @@ async function processPrompt(model,vectorStore,prompt){
     }
 }
 
-function removeProtocol(url) {
-    // Remove "http://" or "https://", if present
-    console.log('In remove protocol...');
-    return url.replace(/^https?:\/\//, '');
-}
-
 // async function chatBotPrompt(prompt){
 //     try{
 //         const vectorStore = await HNSWLib.load(VECTOR_STORE_PATH,new OpenAIEmbeddings());
@@ -211,7 +183,8 @@ function removeProtocol(url) {
 //     }
 // }
 
-async function removeEmbeddings(urlToCheck){
+async function removeEmbeddings(url){
+  const urlToCheck = `${removeProtocol(url)}`;
     try{
         console.log("in try... checking if vector exist to delete")
      //   console.log("supabase query to find..",urlToCheck)
@@ -259,12 +232,63 @@ async function removeEmbeddings(urlToCheck){
 }
 
 async function updateEmbeddings(url){
-  console.log("calling remove embeddings")  
-  removeEmbeddings(url);
-  console.log("calling generate chatbot")
-    generateChatBot(url);
-    console.log("Updated embeddings");
-    return "Updated embeddings"
+  const url_to_check = `${removeProtocol(url)}`;
+  const fileExists = await checkFileExists(url_to_check);
+    if(fileExists){
+      console.log("found embeddings to Update");
+    try {
+      console.log("calling remove embeddings");
+      await removeEmbeddings(url);
+      console.log("calling generate chatbot");
+      try{
+      await generateChatBot(url);
+      console.log("Updated embeddings");
+      return "Embeddings successfully updated";
+      }
+      catch(error){
+        console.log("Error while regenrating embeddings");
+      }
+    } catch (error) {
+      console.error("Error updating embeddings:", error);
+      return "Error: Unable to update embeddings";
+  }
+  }
+  else{
+    console.log("No embeddings found to update");
+    return "No Embeddings found to Update"
+  }
+}
+
+
+function removeProtocol(url) {
+  // Remove "http://" or "https://", if present
+  console.log('In remove protocol...');
+  return url.replace(/^https?:\/\//, '');
+}
+
+
+async function checkFileExists(urlToCheck){
+  try{
+     // console.log("in try... checking if file exist")
+      //console.log("supabase query..",urlToCheck)
+      var {data,error}=await client.from('documents').select('metadata');
+     // console.log(data);
+
+      data = data.filter(e=>e.metadata.url==urlToCheck);
+     // console.log("SSS",data);
+
+      if(error){
+          console.error("supabase error to find..",error);
+          return false;
+      }
+      const urlExists = data && data.length>0;
+      //await fs.access(filePath);
+    //console.log("this is urlExists",urlExists);
+      return urlExists;
+  }catch(error){
+      console.log("in catch... no file found "+error)
+      return false;
+  }
 }
 //createChatBot("https://daywiseai.com","How does daywiseai help us?");
 //chatBotPrompt("https://daywiseai.com","how can daywiseai can help me?");

@@ -14,17 +14,17 @@
     "express": "^4.18.2",
     "html-to-text": "^9.0.5",
     "jsdom": "^22.1.0",
+    "jsonwebtoken": "^9.0.2",
     "langchain": "^0.0.181",
     "serverless-http": "^3.2.0"
   },
   "scripts": {
     "start": "node index.js",
-    "test-local":"npx mocha .\\test\\chatbotApiIntTest.js",
-    "test-stg":"npx mocha .\\test\\chatbotApiIntTest.js https://us8c1blf22.execute-api.ap-south-1.amazonaws.com/stg/",
-    "test-prod":"npx mocha .\\test\\chatbotApiIntTest.js https://us8c1blf22.execute-api.ap-south-1.amazonaws.com/prod/",
-    "deploy-stg":"powershell.exe cd .\\deploy ; .\\deploy-to-lambda.ps1 stg",
-    "deploy-prod":"powershell.exe cd .\\deploy ; .\\deploy-to-lambda.ps1 prod"
-
+    "test-local": "npx mocha .\\test\\chatbotApiIntTest.js",
+    "test-stg": "npx mocha .\\test\\chatbotApiIntTest.js https://us8c1blf22.execute-api.ap-south-1.amazonaws.com/stg/",
+    "test-prod": "npx mocha .\\test\\chatbotApiIntTest.js https://us8c1blf22.execute-api.ap-south-1.amazonaws.com/prod/",
+    "deploy-stg": "powershell.exe cd .\\deploy ; .\\deploy-to-lambda.ps1 stg",
+    "deploy-prod": "powershell.exe cd .\\deploy ; .\\deploy-to-lambda.ps1 prod"
   },
   "devDependencies": {
     "chai": "^4.3.10",
