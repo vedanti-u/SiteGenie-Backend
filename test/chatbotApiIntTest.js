@@ -27,7 +27,9 @@ describe('Chatbot API', () => {
   });
 
   it('should respond with "Hello World! im chatbot" for GET ' + baseRoute + '/chatbot', async () => {
-    const response = await request.get(baseRoute + '/chatbot');
+    const response = await request
+    .get(baseRoute + '/chatbot')
+    .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJleGFtcGxlVXNlciIsImlhdCI6MTcwMTE2MTc5NiwiZXhwIjoxNzAxMTY1Mzk2fQ.Hx_sevwTY8CHHsI98qamAJPLCvnbboZlwV31VAmne28')
     expect(response.status).to.equal(200);
     expect(response.text).to.equal('Hello World! im chatbot');
   });
@@ -35,6 +37,7 @@ describe('Chatbot API', () => {
   it('should respond with chatbot answer for POST ' + baseRoute + '/chatbot', async () => {
     const response = await request
       .post(baseRoute + '/chatbot')
+      .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJleGFtcGxlVXNlciIsImlhdCI6MTcwMTE2MTc5NiwiZXhwIjoxNzAxMTY1Mzk2fQ.Hx_sevwTY8CHHsI98qamAJPLCvnbboZlwV31VAmne28')
       .send({ url: 'https://www.daywiseai.com/' });
 
     expect(response.status).to.equal(200);
@@ -44,7 +47,8 @@ describe('Chatbot API', () => {
   it('should respond with chatbot answer for POST ' + baseRoute + '/chatbotprompt', async () => {
     const response = await request
       .post(baseRoute + '/chatbotprompt')
-      .send({ url: 'https://www.daywiseai.com/', prompt: 'your-prompt-here' });
+      .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJleGFtcGxlVXNlciIsImlhdCI6MTcwMTE2MTc5NiwiZXhwIjoxNzAxMTY1Mzk2fQ.Hx_sevwTY8CHHsI98qamAJPLCvnbboZlwV31VAmne28')
+      .send({ url: 'https://www.daywiseai.com/', prompt: 'what is daywiseai?' });
 
     expect(response.status).to.equal(200);
     // Add more assertions based on your expected response
@@ -62,6 +66,7 @@ describe('Chatbot API', () => {
   it('should respond with success for DELETE ' + baseRoute + '/chatbot', async () => {
     const response = await request
       .delete(baseRoute + '/chatbot')
+      .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywidXNlcm5hbWUiOiJleGFtcGxlVXNlciIsImlhdCI6MTcwMTE2MTc5NiwiZXhwIjoxNzAxMTY1Mzk2fQ.Hx_sevwTY8CHHsI98qamAJPLCvnbboZlwV31VAmne28')
       .send({ url: 'https://www.daywiseai.com/' });
 
     expect(response.status).to.equal(200);
