@@ -1,6 +1,35 @@
-# Site-Backend
+<div align="center">
+<a href="">
+    <img alt="comet" src="https://github.com/vedanti-u/SiteGenie/blob/main/assets/sitegenie-11.png" height=140 >
+</a>
+</div>
+</br>
+<div>
+<div align="center">
 
-this repo contains all the code of backend
+![Next JS](https://img.shields.io/badge/Next-black?style=plastic&logo=next.js&logoColor=white)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=plastic&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=plastic&logo=express&logoColor=%2361DAFB)
+![Javascript](https://img.shields.io/badge/JavaScript-323330?style=plastic&logo=javascript&logoColor=F7DF1E)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=plastic&logo=tailwind-css&logoColor=white)
+![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=plastic&logo=postgresql&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=plastic&logo=supabase&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991.svg?style=plastic&logo=OpenAI&logoColor=white)
+![LangChain](https://img.shields.io/badge/Langchain-green)
+![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=plastic&logo=amazon-aws&logoColor=white)
+![Serverless](https://img.shields.io/badge/Serverless-red)
+![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=plastic&logo=githubactions&logoColor=white)
+![Postman](https://img.shields.io/badge/Postman-FF6C37?style=plastic&logo=postman&logoColor=white)
+<br/>
+<br/>
+
+</div>
+
+</div align="left" >
+
+# SiteGenie - Backend
+
+_This repository contains all the code of backend for_ [SiteGenie](https://github.com/vedanti-u/SiteGenie)
 
 ---
 # Installation
